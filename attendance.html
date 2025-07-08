@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Student Attendance Tracker</title>
+    <style>
+        body{
+            font-family:Arial,sans-serif;
+            margin:20px;
+            background-color:#f5f5f5;
+        }
+        .container{
+            max-width:900px;
+            margin:0 auto;
+            background:white;
+            padding:20px;
+            border-radius:8px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1{
+            text-align:center;
+            color:#333;
+            margin-bottom:30px;
+        }
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin:20px 0;
+        }
+        th,td{
+            border:1px solid #ddd;
+            padding:12px;
+            text-align:left;
+        }
+        th{
+            background-color:#4CAF50;
+            color:white;
+            font-weight:bold;
+        }
+        tr:nth-child(even){
+            background-color:#f9f9f9;
+        }
+        .controls{
+            text-align:center;
+            margin:20px 0;
+        }
+
+        button{
+            background-color:#4CAF50;
+            color:white;
+            border:none;
+            padding:10px 20px;
+            margin:5px;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:14px;
+        }
+        button:hover{
+            background-color:#45a049;
+        }
+        .btn-present{
+            background-color:#4CAF50;
+        }
+        .btn-absent{
+            background-color: #f44336;
+        }
+        .btn-absent:hover{
+            background-color:#da190b;
+        }
+        .statuspresent{
+            background-color:#4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius:4px;
+            font-size:12px;
+        }
+        .statusabsent{
+            background-color: #f44336;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        #finalatt{
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Attendance Tracker</h1>
+        <div class="controls">
+            <button onclick="allpresent()">Mark All Present</button>
+            <button onclick="allabsent()">Mark All Absent</button>
+            <button onclick="clearall()">Clear All</button>
+        </div>
+        <table id="stutable">
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tabody"></tbody>
+        </table>
+        <div class="controls">
+            <button onclick="showstudents()">Show Absent Students</button>
+            <button onclick="clearall()">Clear All</button>
+        </div>
+        
+        
+        <div id="finalatt"></div>
+    </div>
+
+    <script>
+        let rollnumbers=[];
+        let attendance={};
+        
+        function initialrollnum() {
+            for (let i=101;i<=200;i++) {
+                rollnumbers.push(i);
+                attendance[i]=null; 
+            }
+        }
+        
+        function createtab(){
+            let tabody=document.getElementById('tabody');
+            let html='';
+            
+            for (let i=0;i<rollnumbers.length;i++) {
+                let roll=rollnumbers[i];
+                html+='<tr>';
+                html+='<td>' + roll + '</td>';
+                html+='<td><span id="status-' + roll + '"></span></td>';
+                html+='<td>';
+                html+='<button class="btn-present" onclick="present(' + roll + ')">Present</button>';
+                html+='<button class="btn-absent" onclick="absent(' + roll + ')">Absent</button>';
+                html+='</td>';
+                html+='</tr>';
+            }
+            
+            tabody.innerHTML=html;
+        }
+        
+        function present(roll){
+            attendance[roll]='present';
+            displayroll(roll);
+        }
+        
+        function absent(roll){
+            attendance[roll] = 'absent';
+            displayroll(roll);
+        }
+        
+        function displayroll(roll){
+            let statusElement=document.getElementById('status-' + roll);
+            if(attendance[roll]==='present'){
+                statusElement.innerHTML='<span class="statuspresent">PRESENT</span>';
+            } else if(attendance[roll]==='absent'){
+                statusElement.innerHTML='<span class="statusabsent">ABSENT</span>';
+            }
+        }
+        
+        function allpresent(){
+            for (let i=0;i<rollnumbers.length;i++){
+                let roll=rollnumbers[i];
+                attendance[roll]='present';
+                displayroll(roll);
+            }
+        }
+        
+        function allabsent(){
+            for (let i=0;i<rollnumbers.length;i++){
+                let roll=rollnumbers[i];
+                attendance[roll]='absent';
+                displayroll(roll);
+            }
+        }
+        
+        function showstudents(){
+            let absentStudents=[];
+            
+            for (let i=0;i<rollnumbers.length;i++){
+                let roll=rollnumbers[i];
+                if (attendance[roll]==='absent'){
+                    absentStudents.push(roll);
+                }
+            }
+            
+            let finalattDiv=document.getElementById('finalatt');
+            if (absentStudents.length>0){
+                finalattDiv.innerHTML='Absent Roll Numbers: '+absentStudents.join(',');
+                finalattDiv.style.display='block';
+            }else{
+                finalattDiv.innerHTML='No students absent';
+                finalattDiv.style.display = 'block';
+            }
+        }
+        
+        function clearall(){
+            for(let i=0;i<rollnumbers.length;i++){
+                let roll=rollnumbers[i];
+                attendance[roll]=null;
+                document.getElementById('status-'+roll).innerHTML='';
+            }
+            document.getElementById('finalatt').style.display = 'none';
+        }
+        
+        window.onload=function(){
+            initialrollnum();
+            createtab();
+        };
+    </script>
+</body>
+</html>
